@@ -66,7 +66,7 @@ def upper(value):
 Once you’ve defined your custom tags or filters, you need to load them in your templates before using them.
 
 #### Loading Custom Tags
->In your template file (e.g., `template.html`), load the custom tags using the load tag:
+>In your template file (e.g., `template.html`), load the custom tags using the {% load %} tag:
 
 ```django
 {% load custom_tags %}
