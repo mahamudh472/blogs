@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Index</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .blog-card{
+            text-decoration: none !important;
+        }
+        .blog-card:hover{
+            box-shadow: 10 10px 10px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Blog Index</h1>
+        
+
+        </table>
+        <ul id="blog-list">
+            <!-- Blog list will be dynamically populated here -->
+        </ul>
+    </div>
+   
+
+    <script>
+        $(document).ready(function() {
+            // Load blog list from JSON
+            $.getJSON('blogs.json', function(data) {
+                var blogList = $('#blog-list');
+                $.each(data, function(index, blog) {
+                    var listItem = $('<li></li>');
+                    var link = $('<a></a>')
+                        .attr('href', '#')
+                        .data('file', blog.file)
+                        .text(blog.id +" "+ blog.title);
+                        link.addClass("card card-body blog-card")
+                    listItem.append(link);
+                    blogList.append(listItem);
+                });
+            }).fail(function() {
+                $('#blog-list').html('<li>Error loading blog list.</li>');
+            });
+
+            // Handle blog click event
+            $(document).on('click', '#blog-list a', function(e) {
+                e.preventDefault();
+                var file = $(this).data('file');
+                // Redirect to blog-template.html with query parameter
+                window.location.href = 'blog-template.html?blog=' + encodeURIComponent(file);
+            });
+        });
+    </script>
+</body>
+</html>

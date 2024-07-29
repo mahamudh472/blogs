@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Post</title>
+    <!-- Include jQuery from CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #content {
+            border: 1px solid #ddd;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="content">
+        <h1>Loading...</h1>
+        <p>Please wait while the blog post is loading.</p>
+    </div>
+    <a href="index.html" class="back-link">← Back to Blog Index</a>
+
+    <script>
+        $(document).ready(function() {
+            // Function to get URL parameters
+            function getQueryParam(param) {
+                var urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            }
+
+            // Get the blog file from URL query parameters
+            var blogFile = getQueryParam('blog');
+
+            if (blogFile) {
+                // Load the blog content
+                $('#content').load('blogs/' + encodeURIComponent(blogFile), function(response, status, xhr) {
+                    if (status == "error") {
+                        $('#content').html('<h1>Oops!</h1><p>Sorry, the blog post could not be loaded.</p>');
+                    }
+                });
+            } else {
+                $('#content').html('<h1>No Blog Selected</h1><p>Please go back and select a blog post.</p>');
+            }
+        });
+    </script>
+</body>
+</html>
