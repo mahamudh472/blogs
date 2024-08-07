@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Using AJAX in django.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h3 id="what-is-ajax">What is AJAX?</h3>
+<p><strong>AJAX</strong> (Asynchronous JavaScript and XML) is a set of web development techniques using various web technologies on the client side to create asynchronous web applications. With AJAX, web applications can send and retrieve data from a server asynchronously without interfering with the display and behavior of the existing page.</p>
+<h4 id="why-use-ajax">Why Use AJAX?</h4>
+<ul>
+<li><strong>Improved User Experience</strong>: AJAX allows users to interact with your application without needing full page reloads.</li>
+<li><strong>Reduced Server Load</strong>: By updating only parts of the page, less data needs to be transferred between the server and the client.</li>
+<li><strong>Asynchronous Calls</strong>: Users can continue to use the web page while requests are being processed.</li>
+<li><strong>Dynamic Content Updates</strong>: Load content based on user interactions, preferences, or actions.</li>
+</ul>
+<h3 id="basic-setup-for-ajax-in-django">Basic Setup for AJAX in Django</h3>
+<ol>
+<li>
+<p>Set Up Django Environment</p>
+<p>Ensure you have a Django project set up. If not, you can create one using:</p>
+</li>
+</ol>
+<pre class="hljs"><code><div>django-admin startproject myproject
+<span class="hljs-built_in">cd</span> myproject
+python manage.py startapp myapp
+
+</div></code></pre>
+<ol start="2">
+<li>
+<p>Create a Django View</p>
+<p>Create a view to handle AJAX requests. Let's say we want to submit a form via AJAX:</p>
+</li>
+</ol>
+<pre class="hljs"><code><div><span class="hljs-comment"># views.py</span>
+<span class="hljs-keyword">from</span> django.http <span class="hljs-keyword">import</span> JsonResponse
+<span class="hljs-keyword">from</span> django.views.decorators.csrf <span class="hljs-keyword">import</span> csrf_exempt
+<span class="hljs-keyword">from</span> django.shortcuts <span class="hljs-keyword">import</span> render
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">my_view</span><span class="hljs-params">(request)</span>:</span>
+    <span class="hljs-keyword">if</span> request.method == <span class="hljs-string">'POST'</span>:
+        <span class="hljs-comment"># Handle the POST request data</span>
+        name = request.POST.get(<span class="hljs-string">'name'</span>)
+        email = request.POST.get(<span class="hljs-string">'email'</span>)
+        
+        <span class="hljs-comment"># Perform server-side operations, e.g., save data to the database</span>
+
+        <span class="hljs-comment"># Return a JSON response</span>
+        response_data = {
+            <span class="hljs-string">'message'</span>: <span class="hljs-string">'Form submitted successfully!'</span>,
+            <span class="hljs-string">'name'</span>: name,
+            <span class="hljs-string">'email'</span>: email
+        }
+        <span class="hljs-keyword">return</span> JsonResponse(response_data)
+
+    <span class="hljs-keyword">return</span> render(request, <span class="hljs-string">'myapp/form.html'</span>)
+
+</div></code></pre>
+<ol start="3">
+<li>
+<p>Configure URLs</p>
+<p>Set up URLs to route requests to your view.</p>
+</li>
+</ol>
+<pre class="hljs"><code><div><span class="hljs-comment"># urls.py</span>
+<span class="hljs-keyword">from</span> django.urls <span class="hljs-keyword">import</span> path
+<span class="hljs-keyword">from</span> . <span class="hljs-keyword">import</span> views
+
+urlpatterns = [
+    path(<span class="hljs-string">'ajax/form-submit/'</span>, views.my_view, name=<span class="hljs-string">'form_submit'</span>),
+]
+
+</div></code></pre>
+<ol start="4">
+<li>
+<p>Create a Form with AJAX</p>
+<p>Create an HTML form that submits data via AJAX.</p>
+</li>
+</ol>
+<pre class="hljs"><code><div><span class="hljs-comment">&lt;!-- form.html --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"myForm"</span> <span class="hljs-attr">method</span>=<span class="hljs-string">"POST"</span>&gt;</span>
+    {% csrf_token %}
+    <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">"name"</span>&gt;</span>Name:<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"name"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"name"</span> <span class="hljs-attr">required</span>&gt;</span>
+    
+    <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">"email"</span>&gt;</span>Email:<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"email"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"email"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"email"</span> <span class="hljs-attr">required</span>&gt;</span>
+    
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"submit"</span>&gt;</span>Submit<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"result"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">
+    $(<span class="hljs-built_in">document</span>).ready(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+        $(<span class="hljs-string">'#myForm'</span>).submit(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) </span>{
+            event.preventDefault(); <span class="hljs-comment">// Prevent the default form submission</span>
+
+            $.ajax({
+                <span class="hljs-attr">url</span>: <span class="hljs-string">'{% url "form_submit" %}'</span>, <span class="hljs-comment">// URL to send the request to</span>
+                <span class="hljs-attr">type</span>: <span class="hljs-string">'POST'</span>, <span class="hljs-comment">// HTTP method</span>
+                <span class="hljs-attr">data</span>: $(<span class="hljs-keyword">this</span>).serialize(), <span class="hljs-comment">// Serialize the form data</span>
+                <span class="hljs-attr">success</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">response</span>) </span>{
+                    $(<span class="hljs-string">'#result'</span>).html(<span class="hljs-string">'&lt;p&gt;'</span> + response.message + <span class="hljs-string">'&lt;/p&gt;'</span>);
+                },
+                <span class="hljs-attr">error</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">xhr, status, error</span>) </span>{
+                    <span class="hljs-built_in">console</span>.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+
+</div></code></pre>
+<h3 id="handling-different-http-methods">Handling Different HTTP Methods</h3>
+<p>AJAX requests can use various HTTP methods (GET, POST, PUT, DELETE) depending on the operation. Here’s how you can handle different methods in Django:</p>
+<h4 id="get-request">GET Request</h4>
+<p>Fetching data asynchronously using AJAX GET requests.</p>
+<pre class="hljs"><code><div><span class="hljs-comment"># views.py</span>
+<span class="hljs-keyword">from</span> django.http <span class="hljs-keyword">import</span> JsonResponse
+<span class="hljs-keyword">from</span> django.shortcuts <span class="hljs-keyword">import</span> render
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fetch_data</span><span class="hljs-params">(request)</span>:</span>
+    <span class="hljs-keyword">if</span> request.method == <span class="hljs-string">'GET'</span>:
+        data = {
+            <span class="hljs-string">'name'</span>: <span class="hljs-string">'John Doe'</span>,
+            <span class="hljs-string">'email'</span>: <span class="hljs-string">'johndoe@example.com'</span>
+        }
+        <span class="hljs-keyword">return</span> JsonResponse(data)
+
+    <span class="hljs-keyword">return</span> render(request, <span class="hljs-string">'myapp/fetch.html'</span>)
+
+
+</div></code></pre>
+<pre class="hljs"><code><div><span class="hljs-comment">&lt;!-- fetch.html --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"fetchData"</span>&gt;</span>Fetch Data<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"dataResult"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">
+    $(<span class="hljs-built_in">document</span>).ready(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+        $(<span class="hljs-string">'#fetchData'</span>).click(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            $.ajax({
+                <span class="hljs-attr">url</span>: <span class="hljs-string">'{% url "fetch_data" %}'</span>,
+                <span class="hljs-attr">type</span>: <span class="hljs-string">'GET'</span>,
+                <span class="hljs-attr">success</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">response</span>) </span>{
+                    $(<span class="hljs-string">'#dataResult'</span>).html(<span class="hljs-string">'&lt;p&gt;Name: '</span> + response.name + <span class="hljs-string">'&lt;/p&gt;&lt;p&gt;Email: '</span> + response.email + <span class="hljs-string">'&lt;/p&gt;'</span>);
+                },
+                <span class="hljs-attr">error</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">xhr, status, error</span>) </span>{
+                    <span class="hljs-built_in">console</span>.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</div></code></pre>
+<h3 id="summary">Summary</h3>
+<p>Working with AJAX in Django involves using JavaScript on the frontend to make asynchronous HTTP requests to Django views on the backend. This allows for seamless and interactive user experiences without page reloads.</p>
+<ul>
+<li><strong>CSRF Protection</strong>: Remember to handle CSRF tokens correctly for secure AJAX requests.</li>
+<li><strong>jQuery vs. Fetch API</strong>: jQuery simplifies AJAX calls, but the Fetch API is a modern alternative.</li>
+<li><strong>Error Handling</strong>: Always implement proper error handling for AJAX requests.</li>
+<li><strong>Django Rest Framework (DRF)</strong>: Consider using DRF for more robust API development.</li>
+</ul>
+
+</body>
+</html>

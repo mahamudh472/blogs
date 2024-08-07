@@ -6,7 +6,12 @@
     },
     {
         "id": "#2",
-        "title": "Blog 2",
+        "title": "Using AJAX in django",
+        "file": "blogs/Using AJAX in django.html"
+    },
+    {
+        "id": "#3",
+        "title": "Blog 3",
         "file": "blogs/Blog 2.html"
     }
 ]
